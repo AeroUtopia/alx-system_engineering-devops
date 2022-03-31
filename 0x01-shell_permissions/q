@@ -1,0 +1,2 @@
+#!/bin/bash:q
+chown ==from=guillaume betty hello
