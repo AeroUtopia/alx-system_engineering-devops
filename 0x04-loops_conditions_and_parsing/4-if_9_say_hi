@@ -3,7 +3,7 @@
 i=10
 while [ "$i" -gt 0 ]
 do
-    echo "Holberton School"
+    echo "Best School"
     if [ "$i" -eq 2 ]
     then
         echo "Hi"
