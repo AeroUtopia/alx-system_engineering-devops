@@ -3,7 +3,7 @@
 i=10
 until [ "$i" -le 0 ]
 do
-    echo "Holberton School"
+    echo "Best School"
     i=$((i - 1))
 done
 i=$i
