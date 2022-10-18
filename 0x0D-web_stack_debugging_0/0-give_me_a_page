@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-# Start Apache so as to return a
-# page conatining Hello Holberton
+# "dont forget your comment" -Kyle
+echo 'ServerName localhost' | sudo tee /etc/apache2/conf-available/fqdn.conf
 service apache2 start
