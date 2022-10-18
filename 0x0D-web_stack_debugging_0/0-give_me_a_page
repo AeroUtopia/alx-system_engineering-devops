@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
-# "dont forget your comment" -Kyle
-echo 'ServerName localhost' | sudo tee /etc/apache2/conf-available/fqdn.conf
+# run apache on holbertonschool/265-0 container
+
+echo "ServerName localhost" >> /etc/apache2.conf
 service apache2 start
