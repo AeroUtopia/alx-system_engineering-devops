@@ -3,8 +3,9 @@
 # redirects to another page
 
 sudo apt-get -y update
+sudo apt-get -y upgrade
 sudo apt-get -y install nginx
-sudo ufw allow 'Nginx HTTP'
-echo "Hello World!" > sudo /var/www/html/index.nginx-debian.html
-sudo -i "37i\rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;" /etc/nginx/sites-available/default
+sudo "$USER":"$USER" /var/www/html/index.html
+echo "Hello World!" > /var/www/html/index.html
+sudo -i '/listen 80 default-server; /a rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;" /etc/nginx/sites-available/default
 sudo service nginx start
