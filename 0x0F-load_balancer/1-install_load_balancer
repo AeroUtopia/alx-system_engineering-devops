@@ -5,7 +5,7 @@ sudo apt-get -y install software-properties-common
 sudo add-apt-repository -y ppa:vbernat/haproxy-1.8
 sudo apt-get update
 sudo apt-get -y install haproxy=1.8.\*
-options="\n\tbind :80\n\tmode http\n\tuse_backend mybackend\nbackend mybackend\n\tbalance roundrobin\n\tserver 971-web-01 3.236.145.156:80 check\n\tserver 971-web-02 100.25.190.102:80 check"
+options="\n\tbind :80\n\tmode http\n\tuse_backend mybackend\nbackend mybackend\n\tbalance roundrobin\n\tserver 32589-web-01 3.236.145.156:80 check\n\tserver 32589-web-02 100.25.190.102:80 check"
 sed -i '/errorfile 504/a frontend myconf' /etc/haproxy/haproxy.cfg
 sed -i "s/frontend myconf/&$options/g" /etc/haproxy/haproxy.cfg
 sudo service haproxy restart
