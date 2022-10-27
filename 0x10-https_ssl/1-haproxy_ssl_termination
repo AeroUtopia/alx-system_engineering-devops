@@ -1,56 +1,44 @@
-global
-	log /dev/log    local0
-	log /dev/log    local1 notice
-	chroot /var/lib/haproxy
-	stats socket /run/haproxy/admin.sock mode 660 level admin
-	stats timeout 30s
-	user haproxy
-	group haproxy
-	daemon
+#!/usr/bin/env bash
+# Configure my domain zone:
+# www --> 32589-lb-01 100.27.10.77
+# web-01 --> 32589-web-01 3.236.145.156
+# web-02 --> 32589-web-02 100.25.190.102
 
-	# Default SSL material locations
-	ca-base /etc/ssl/certs
-	crt-base /etc/ssl/private
+# -- To be evaluated --
+# domain_information () {
+#     line=$(dig "$2"."$1" | grep -A1 'ANSWER SECTION:' | tr '\t' '\n' | tail -2 | tr '\n' ' ')
+#     echo "$2 $line" | awk '{print "The subdomain " $1 " is a " $2 " record and points to " $3}'
+# }
 
-	# Default ciphers to use on SSL-enabled listening sockets.
-	# For more information, see ciphers(1SSL). This list is from:
-	#  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
-	ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS
-	ssl-default-bind-options no-sslv3
+# if [ "$#" == 1 ]
+# then
+#   domain_information "$1" "www"
+#   domain_information "$1" "lb-01"
+#   domain_information "$1" "web-01"
+#   domain_information "$1" "web-02"
+# elif [ "$#" == 2 ]
+# then
+#   domain_information "$1" "$2"
+# fi
+#-- To be evaluated --
 
-defaults
-log     global
-mode    http
-option  httplog
-option  dontlognull
-timeout connect 5000
-timeout client  50000
-timeout server  50000
-errorfile 400 /etc/haproxy/errors/400.http
-errorfile 403 /etc/haproxy/errors/403.http
-errorfile 408 /etc/haproxy/errors/408.http
-errorfile 500 /etc/haproxy/errors/500.http
-errorfile 502 /etc/haproxy/errors/502.http
-errorfile 503 /etc/haproxy/errors/503.http
-errorfile 504 /etc/haproxy/errors/504.http
+subdomains_all=( "www" "lb-01" "web-01" "web-02" )
 
+runDig () {
+    subdomain=$1
+    domain=$2
 
-frontend http_front
-bind *:80
-bind *:443 ssl crt /etc/ssl/www.gzoref.tech/www.gzoref.tech.pem
+    dig "$subdomain.$domain" | grep -A1 'ANSWER SECTION:' | tail -1 | awk -v s="$subdomain" 'BEGIN { FS = " " } ; { print "The subdomain " s " is a " $4 " record and points to " $5 }'
+}
 
-redirect scheme https if !{ ssl_fc }
-
-acl letsencrypt-acl path_beg /.well-known/acme-challenge/
-use_backend letsencrypt-backend if letsencrypt-acl
-default_backend http_back
-
-
-backend letsencrypt-backend
-server letsencrypt 127.0.0.1:443
-
-
-backend http_back
-balance roundrobin
-server 1034-web-01 3.236.145.156:80 check
-server 1034-web-02 100.25.190.102:80 check
+if [ $# -eq 1 ]; then
+    domain="$1"
+    for i in "${subdomains_all[@]}"
+    do
+	runDig "$i" "$domain"
+    done
+elif [ $# -eq 2 ]; then
+    domain="$1"
+    subdomain="$2"
+    runDig "$subdomain" "$domain"
+fi
